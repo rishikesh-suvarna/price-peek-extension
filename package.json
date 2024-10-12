@@ -4,9 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc && npm run copy",
+    "copy": "copyfiles -u 2 src/public/**/* dist/public",
+    "dev": "ts-node src/index.ts"
   },
   "keywords": [],
   "author": "Rishikesh S",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/node": "^22.7.5",
+    "copyfiles": "^2.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "axios": "^1.6.8"
+  }
 }
