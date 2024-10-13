@@ -21,6 +21,7 @@ main {
     background-color: $tertiary;
     min-width: 300px;
     max-width: 400px;
+    min-height: 400px;
     max-height: 600px;
     overflow-y: scroll;
     border: 1px solid rgba($color: $primary, $alpha: .4);
