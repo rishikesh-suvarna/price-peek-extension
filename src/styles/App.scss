@@ -67,6 +67,27 @@ button {
     }
 }
 
+.pills-wrapper {
+    &::-webkit-scrollbar {
+        height: .2rem;
+        width: 100%;
+        display: none;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: $primary;
+        border-radius: 1rem;
+        height: .2rem;
+    }
+    .item-pills {
+        padding: .3rem 1rem;
+        font-size: .8rem;
+        font-weight: 500;
+        color: $primary;
+        background-color: rgba($color: $primary, $alpha: .2);
+        border-radius: 10rem;
+    }
+}
+
 section.tabs {
     button {
         &.tab-buttons {
