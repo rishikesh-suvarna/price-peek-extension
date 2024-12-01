@@ -9,6 +9,7 @@ import Async from "react-select/async";
 import debounce from "../../utils/debounce";
 import { storage } from "../../utils/storage";
 import { toast } from "sonner";
+import LineChart from "../Common/LineChart";
 
 const DEFAULT_FAVOURITES: string[] = [
     "AAPL",
@@ -33,6 +34,7 @@ const Stocks = () => {
     const { data, isLoading, error } = useFetchStockData("OVERVIEW", symbol);
     const { data: timeSeriesData } = useFetchTimeSeries("TIME_SERIES_DAILY", symbol);
     const [favourites, setFavourites] = useState<string[]>(DEFAULT_FAVOURITES);
+    const [chartData, setChartData] = useState<{ labels: string[], dataPoints: number[] }>({ labels: [], dataPoints: [] });
 
     const { control, handleSubmit, formState: { errors } } = useForm<StockSearchFormValues>({
         resolver: yupResolver(StockSearchFormSchema),
@@ -60,9 +62,9 @@ const Stocks = () => {
 
     const addToFavourites = (symbol: string) => {
         try {
-            if(symbol) {
+            if (symbol) {
                 const favouritesMap = new Set(favourites);
-                if(favouritesMap.has(symbol)) {
+                if (favouritesMap.has(symbol)) {
                     toast.error("Stock already in favourites");
                     return;
                 }
@@ -73,8 +75,8 @@ const Stocks = () => {
                 toast.error("An error occurred while saving to favourites");
             }
         } catch (error) {
-            console.error("An error occurred while saving to favourites", error);   
-            toast.error("An error occurred while saving to favourites");         
+            console.error("An error occurred while saving to favourites", error);
+            toast.error("An error occurred while saving to favourites");
         }
     }
 
@@ -89,10 +91,20 @@ const Stocks = () => {
     }, [])
 
     useEffect(() => {
-        console.log(timeSeriesData)
-    },[timeSeriesData])
-   
-    
+        if (timeSeriesData) {
+            let processedData = timeSeriesData?.data["Time Series (Daily)"];
+            if (!processedData) {
+                return;
+            }
+            processedData = Object.entries(processedData).slice(0, 10).reverse();
+            processedData = Object.fromEntries(processedData);
+            const labels = Object.keys(processedData);
+            const dataPoints = labels.map((date) => parseFloat(processedData[date]["4. close"]));
+            setChartData({ labels, dataPoints });
+        }
+    }, [timeSeriesData])
+
+
     return (
         <div className="stocks-wrapper">
             <div className="favourites-wrapper mb-4">
@@ -112,7 +124,7 @@ const Stocks = () => {
                         <p>No favourites found</p>
                     )
                 }
-           </div>
+            </div>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Controller
                     control={control}
@@ -141,6 +153,20 @@ const Stocks = () => {
             }
             {
                 isLoading && <Spinner classnames="mt-4" />
+            }
+            {
+                chartData.labels.length > 0 && (
+                    <div className="">
+                        <LineChart
+                            labels={chartData.labels}
+                            dataPoints={chartData.dataPoints}
+                            labelTitle="Close Prices"
+                            chartTitle="Close Price Chart"
+                            xTitle="Date"
+                            yTitle="Price (USD)"
+                        />
+                    </div>
+                )
             }
 
             {

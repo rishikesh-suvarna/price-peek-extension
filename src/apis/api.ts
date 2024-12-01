@@ -13,7 +13,7 @@ export function useFetchStockData(fn: string, symbol: string | null, interval?: 
     return useQuery({
         queryKey: ["fetch-stock-data", fn, symbol, interval],
         queryFn: () => axios.get(`${API_URL}?${searchParams.toString()}`),
-        enabled: false,
+        enabled: !!symbol,
     });
 }
 
