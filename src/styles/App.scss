@@ -22,7 +22,7 @@ main {
     min-width: 400px;
     max-width: 500px;
     height: 600px;
-    overflow-y: scroll;
+    overflow-y: auto;
     border: 1px solid rgba($color: $primary, $alpha: .4);
     &::-webkit-scrollbar {
         width: 4px;
@@ -78,7 +78,7 @@ button {
         height: .2rem;
     }
     .item-pills {
-        padding: .3rem 1rem;
+        padding: .3rem 1.3rem;
         font-size: .8rem;
         font-weight: 500;
         color: $primary;
