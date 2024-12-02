@@ -1,5 +1,6 @@
 import { Toaster } from 'sonner';
 import Tabs from './components/Tabs/Tabs';
+import 'react-loading-skeleton/dist/skeleton.css'
 
 const App: React.FC = () => {
   return (

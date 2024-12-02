@@ -25,7 +25,6 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({
   return (
     <div className="company-details mt-4">
         <h2>{data.Name} ({data.Symbol})</h2>
-        <p className="description">{data.Description}</p>
         <p>Industry: {data.Industry}</p>
         <p>Exchange: {data.Exchange}</p>
         <p>Country: {data.Country}</p>

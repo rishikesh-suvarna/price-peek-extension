@@ -3,13 +3,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { StockSearchFormSchema, StockSearchFormValues } from "../../schemas/stock-search-schema";
 import { useCallback, useEffect, useState } from "react";
 import { searchStockData, useFetchStockData, useFetchTimeSeries } from "../../apis/api";
-import Spinner from "../Common/Spinner";
 import CompanyDetails from "./CompanyDetails";
 import Async from "react-select/async";
 import debounce from "../../utils/debounce";
 import { storage } from "../../utils/storage";
 import { toast } from "sonner";
 import LineChart from "../Common/LineChart";
+import Favourites from "../Common/Favourites";
+import Skeleton from "react-loading-skeleton";
 
 const DEFAULT_FAVOURITES: string[] = [
     "AAPL",
@@ -33,7 +34,7 @@ const Stocks = () => {
     const [symbol, setSymbol] = useState<string | null>(null);
     const { data, isLoading, error } = useFetchStockData("OVERVIEW", symbol);
     const { data: timeSeriesData } = useFetchTimeSeries("TIME_SERIES_DAILY", symbol);
-    const [favourites, setFavourites] = useState<string[]>(DEFAULT_FAVOURITES);
+    const [favourites, setFavourites] = useState<string[]>([]);
     const [chartData, setChartData] = useState<{ labels: string[], dataPoints: number[] }>({ labels: [], dataPoints: [] });
 
     const { control, handleSubmit, formState: { errors } } = useForm<StockSearchFormValues>({
@@ -83,11 +84,21 @@ const Stocks = () => {
     const fetchFavoriteStocks = async () => {
         const stocks = await storage.get(['favouriteStocks']);
         setFavourites(stocks.favouriteStocks || DEFAULT_FAVOURITES);
-        toast.success("Favourites fetched");
     };
-
+    
     useEffect(() => {
+        toast.loading("Fetching favourite stocks...", {
+            id: "fetch-f"
+        });
         fetchFavoriteStocks();
+        toast.success("Favourite stocks fetched", {
+            id: "fetch-f"
+        });
+
+        return () => {
+            toast.dismiss("fetch-f");
+        }
+
     }, [])
 
     useEffect(() => {
@@ -109,21 +120,10 @@ const Stocks = () => {
         <div className="stocks-wrapper">
             <div className="favourites-wrapper mb-4">
                 <h2 className="text-lg font-bold mb-2">Favourites</h2>
-                {
-                    favourites.length > 0 ? (
-                        <ul className="flex overflow-scroll items-center gap-1 pills-wrapper">
-                            {favourites.map((stock, index) => (
-                                <li key={index} className="item-pills">
-                                    <button className="flex items-center gap-2" onClick={() => setSymbol(stock)}>
-                                        {stock}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>No favourites found</p>
-                    )
-                }
+                <Favourites
+                    favourites={favourites}
+                    setSymbol={setSymbol}
+                />
             </div>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Controller
@@ -152,11 +152,16 @@ const Stocks = () => {
                 )
             }
             {
-                isLoading && <Spinner classnames="mt-4" />
+                isLoading && (
+                    <div className="mt-2">
+                        <Skeleton count={1} height={180} />
+                        <Skeleton count={5} className="mt-2" />
+                    </div>
+                )
             }
             {
                 chartData.labels.length > 0 && (
-                    <div className="">
+                    <div className="mt-2">
                         <LineChart
                             labels={chartData.labels}
                             dataPoints={chartData.dataPoints}
