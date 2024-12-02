@@ -13,6 +13,12 @@ const App: React.FC = () => {
           }
         }}
       />
+      <div className="bg-[#eee4fc]">
+        <img
+          src="/public/assets/pp-logo-horizontal.png"
+          className='p-2 h-10 mx-auto'
+        />
+      </div>
       <Tabs />
     </main>
   );
